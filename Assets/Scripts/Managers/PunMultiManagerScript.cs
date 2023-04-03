@@ -13,6 +13,7 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     [Header("Room Controls")]
     [SerializeField] private Button roomButton;
     [SerializeField] private string roomName;
+    [SerializeField] private Button startGameButton;
 
     [Header("Debug Text")]
     [SerializeField] private TextMeshProUGUI m_tmpg_Master;
@@ -20,6 +21,12 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     [SerializeField] private TextMeshProUGUI m_tmpg_RoomName;
     [SerializeField] private TextMeshProUGUI m_tmpg_RoomPlayerCount;
     [SerializeField] private TextMeshProUGUI m_tmpg_PlayerListText;
+
+    [Header("UI's")]
+    [SerializeField] private CanvasRenderer panel_SecondUI;
+    [SerializeField] private CanvasRenderer panel_FirstUI;
+    [SerializeField] private TextMeshProUGUI m_tmpg_2ndUIPrompt;
+
 
     public void PhotonPunLogin()
     {
@@ -61,6 +68,11 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
         base.OnPlayerEnteredRoom(newPlayer);
         Debug.Log($"Player name is {newPlayer.NickName}");
         RefreshRoomUI();
+
+        if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount > 1)
+        {
+            startGameButton.interactable = true;
+        }
     }
 
     public override void OnPlayerLeftRoom(Player otherPlayer)
@@ -110,11 +122,18 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
         {
             m_tmpg_RoomName.text = PhotonNetwork.CurrentRoom.Name;
             m_tmpg_RoomPlayerCount.text = string.Format($"{PhotonNetwork.CurrentRoom.PlayerCount}/{PhotonNetwork.CurrentRoom.MaxPlayers}");
+            //panel_SecondUI.gameObject.SetActive(true);
+            //panel_FirstUI.gameObject.SetActive(false);
             foreach (var player in PhotonNetwork.PlayerList)
             {
                 m_tmpg_PlayerListText.text += player.NickName + "\n";
             }
         }
+        //if (PhotonNetwork.CurrentRoom == null)
+        //{
+        //    panel_SecondUI.gameObject.SetActive(false);
+        //    panel_FirstUI.gameObject.SetActive(true);
+        //}
     }
 
     public void CreateOrJoinRoom()
