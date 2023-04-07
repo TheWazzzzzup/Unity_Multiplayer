@@ -27,6 +27,8 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     [SerializeField] private CanvasRenderer panel_FirstUI;
     [SerializeField] private TextMeshProUGUI m_tmpg_2ndUIPrompt;
 
+    private bool isMasterClient => PhotonNetwork.IsMasterClient;
+
 
     public void PhotonPunLogin()
     {
