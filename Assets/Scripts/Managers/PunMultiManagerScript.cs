@@ -8,13 +8,25 @@ using Photon.Realtime;
 
 public class PunMultiManagerScript : MonoBehaviourPunCallbacks
 {
-    [SerializeField] TMP_InputField nicknameInputField;
+    [Header("Welcome Panel")]
+    [SerializeField] private GameObject WelcomePanel;
+    [SerializeField] private TMP_InputField playerNickname;
+    [SerializeField] private TMP_Text welcomePrompt;
+    [SerializeField] private Button selectNickName;
+    // Second Screen
+    [SerializeField] private TMP_Text welcomePrompt2;
+    [SerializeField] private Button joinServer;
+
+    [Header("Login Panel")]
+    [SerializeField] private GameObject loginPanel;
+
 
     [Header("Room Controls")]
     [SerializeField] private Button roomButton;
     [SerializeField] private string roomName;
     [SerializeField] private Button startGameButton;
 
+    [SerializeField] TMP_InputField nicknameInputField;
     [Header("Debug Text")]
     [SerializeField] private TextMeshProUGUI m_tmpg_Master;
     [SerializeField] private TextMeshProUGUI m_tmpg_Room;
@@ -30,11 +42,35 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     private bool isMasterClient => PhotonNetwork.IsMasterClient;
 
 
+    public void NickNameCreated()
+    {
+        if (playerNickname.text.Length > 3)
+        {
+            Debug.Log("not Null");
+            PhotonNetwork.NickName = playerNickname.text;
+
+            welcomePrompt.gameObject.SetActive(false);
+            selectNickName.gameObject.SetActive(false);
+            playerNickname.gameObject.SetActive(false);
+
+
+
+            welcomePrompt2.text = $"Welcome {PhotonNetwork.NickName} press the button to join the server";
+            welcomePrompt2.gameObject.SetActive(true);
+            joinServer.gameObject.SetActive(true);
+        }
+        else
+        {
+            welcomePrompt.color = Color.red;
+        }
+    }
+
     public void PhotonPunLogin()
     {
-        PhotonNetwork.NickName = nicknameInputField.text;
-        Debug.Log($"Your nickname is {PhotonNetwork.NickName}");
         PhotonNetwork.ConnectUsingSettings();
+        WelcomePanel.gameObject.SetActive(false);
+        loginPanel.gameObject.SetActive(true);
+
     }
 
     private void Start()
