@@ -130,6 +130,10 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
         PhotonNetwork.Disconnect();
     }
 
+    [ContextMenu("DebugNumberOfRooms")]
+    public void NumberOfRooms() => Debug.Log(PhotonNetwork.CountOfRooms);
+
+
     #endregion
 
 
@@ -178,13 +182,6 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
         m_tmpg_Room.text = "Failed To Connect To Room";
     }
 
-    public void GetRoomCount() => Debug.Log(PhotonNetwork.CountOfRooms);
-
-    private void Update()
-    {
-        m_tmpg_Master.text = PhotonNetwork.NetworkClientState.ToString();
-    }
-
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
         Debug.Log("OnRoomListUpdateCalled");
@@ -225,7 +222,7 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
         //}
     }
 
-    public void CreateOrJoinRoom()
+    public void CreateRoom()
     {
         roomButton.interactable = false;
         PhotonNetwork.JoinOrCreateRoom(roomName, new RoomOptions() { MaxPlayers = 20 },null);
