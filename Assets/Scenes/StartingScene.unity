@@ -2500,7 +2500,7 @@ GameObject:
   - component: {fileID: 864622264}
   - component: {fileID: 864622266}
   m_Layer: 5
-  m_Name: PlayerCount
+  m_Name: PlayerListText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3390,12 +3390,12 @@ MonoBehaviour:
   createRoomButton: {fileID: 1653363496}
   selctedRoomName: {fileID: 951337937}
   selectedRoomListPrompt: {fileID: 1643384572}
-  selctedRoomPlayerCount: {fileID: 864622264}
+  selctedRoomPlayerList: {fileID: 864622264}
   joinRoomButton: {fileID: 1709887059}
   scrollViewContext: {fileID: 1724784713}
   scrollbarVertical: {fileID: 1062649405}
   roomUIPrefab: {fileID: 7737194430248164254, guid: a0596ff7da1bc704290bf8b2456e389a, type: 3}
-  defualtScrollPrompt: {fileID: 0}
+  defualtScrollPrompt: {fileID: 1714390815}
   roomButton: {fileID: 1709887059}
   roomName: LiorTest
   startGameButton: {fileID: 1767880626}
@@ -3419,7 +3419,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 2020988077}
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3531,7 +3532,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 26585575}
   m_HandleRect: {fileID: 26585574}
   m_Direction: 2
-  m_Value: 1
+  m_Value: 0
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -4982,7 +4983,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Players
+  m_text: 'Players:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -5537,7 +5538,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 238.5, y: -383.75}
+  m_AnchoredPosition: {x: 238.5, y: -51.25}
   m_SizeDelta: {x: 214.99, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1709887059
@@ -6923,8 +6924,8 @@ RectTransform:
   m_Children:
   - {fileID: 124264633}
   - {fileID: 1139977599}
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_Father: {fileID: 1060789074}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
