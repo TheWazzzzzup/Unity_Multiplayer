@@ -42,6 +42,5 @@ public class MyRoomInfo : MonoBehaviour , IDeselectHandler
     public void OnDeselect(BaseEventData eventData)
     {
         m_Script.SelectedRoomsCount(-1);
-        m_Script.RoomPicked(RoomInfo);
     }
 }

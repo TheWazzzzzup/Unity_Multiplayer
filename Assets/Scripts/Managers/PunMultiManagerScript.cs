@@ -66,7 +66,9 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
 
     private string currentSelctedRoom;
 
-    int currentSelctedRooms = 0;
+    int currentRoomUiSelcted = 0;
+
+    bool joinRoomInitated = false;
 
     List<GameObject> UIRoomList => new();
 
@@ -107,6 +109,7 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     public void CreateRoom()
     {
         PhotonNetwork.CreateRoom(chooseRoomInputField.text, new RoomOptions() { MaxPlayers = 20 },null);
+        createRoomButton.interactable = false;
     }
 
     #endregion
@@ -208,18 +211,19 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     public override void OnCreatedRoom()
     {
         base.OnCreatedRoom();
+        joinRoomButton.interactable = false;
         selctedRoomName.text = "Room: " + PhotonNetwork.CurrentRoom.Name;
         foreach (var player in PhotonNetwork.PlayerList)
         {
             selctedRoomPlayerList.text = $"{player.NickName}\n";
         }
         CreateRoomSwitch(false);
-        joinRoomButton.interactable = false;
     }
     
     public override void OnCreateRoomFailed(short returnCode, string message)
     {
         base.OnCreateRoomFailed(returnCode, message);
+        createRoomButton.interactable = true;
         chooseRoomPrompt.text = "Failed to Create Room";
     }
     
@@ -274,7 +278,7 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
             startGameButton.interactable = true;
         }
     }
-
+    
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         base.OnPlayerLeftRoom(otherPlayer);
