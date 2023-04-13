@@ -9,16 +9,21 @@ using Photon.Realtime;
 public class PunMultiManagerScript : MonoBehaviourPunCallbacks
 {
     [Header("Welcome Panel")]
-    [SerializeField] private GameObject WelcomePanel;
+    [SerializeField] private GameObject welcomePanel;
+    [Space]
     [SerializeField] private TMP_InputField playerNickname;
     [SerializeField] private TMP_Text welcomePrompt;
     [SerializeField] private Button selectNickName;
     // Second Screen
     [SerializeField] private TMP_Text welcomePrompt2;
     [SerializeField] private Button joinServer;
-
-    [Header("Login Panel")]
-    [SerializeField] private GameObject loginPanel;
+    
+    [Space]
+    [Header("Lobby Panel")]
+    [SerializeField] private GameObject lobbyPanel;
+    [Space]
+    [SerializeField] TMP_Text lobbyMasterStatus;
+    [Space]
 
 
     [Header("Room Controls")]
@@ -42,11 +47,11 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     private bool isMasterClient => PhotonNetwork.IsMasterClient;
 
 
+    #region Event Methods
     public void NickNameCreated()
     {
-        if (playerNickname.text.Length > 3)
+        if (playerNickname.text.Length >= 3)
         {
-            Debug.Log("not Null");
             PhotonNetwork.NickName = playerNickname.text;
 
             welcomePrompt.gameObject.SetActive(false);
@@ -68,24 +73,65 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     public void PhotonPunLogin()
     {
         PhotonNetwork.ConnectUsingSettings();
-        WelcomePanel.gameObject.SetActive(false);
-        loginPanel.gameObject.SetActive(true);
-
+        if (lobbyPanel != null)
+        {
+            welcomePanel.gameObject.SetActive(false);
+            lobbyPanel.gameObject.SetActive(true);
+        }
     }
 
+    #endregion
+
+    #region Unity Methods
     private void Start()
     {
-        m_tmpg_Room.text = "No";
-        m_tmpg_RoomName.text = "";
+        if (welcomePanel != null && lobbyPanel != null)
+        {
+            welcomePanel.gameObject.SetActive(true);
+            lobbyPanel.gameObject.SetActive(false);
+        }
+        else
+        {
+            Debug.LogWarning("One of the panels was not found");
+        }
     }
 
+
+    #endregion
+
+    #region PhotonNetwork Overrides
     public override void OnConnectedToMaster()
     {
         base.OnConnectedToMaster();
-        Debug.Log("<color=#00ff00>Master Is Connected</color>");
-        roomButton.interactable = true;
-        PhotonNetwork.JoinLobby();
+        if (lobbyMasterStatus != null)
+        {
+            lobbyMasterStatus.color = Color.green;
+            lobbyMasterStatus.text = "Connected To Master";
+        }
     }
+
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        base.OnDisconnected(cause);
+        if (lobbyMasterStatus != null)
+        {
+            lobbyMasterStatus.color = Color.red;
+            lobbyMasterStatus.text = "Disconnected from Master";
+        }
+    }
+
+    #endregion
+
+    #region Debug
+
+    [ContextMenu("DebugServerDisconnect")]
+    public void Disconnect()
+    {
+        PhotonNetwork.Disconnect();
+    }
+
+    #endregion
+
 
     public override void OnCreatedRoom()
     {
@@ -132,7 +178,6 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
         m_tmpg_Room.text = "Failed To Connect To Room";
     }
 
-    [ContextMenu("RoomCount")]
     public void GetRoomCount() => Debug.Log(PhotonNetwork.CountOfRooms);
 
     private void Update()
@@ -150,6 +195,12 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
             x++;
             Debug.Log($"{x}.{roominfo.Name}");
         }
+    }
+
+    public override void OnJoinedLobby()
+    {
+        base.OnJoinedLobby();
+        Debug.Log("Jonied Lobby");
     }
 
     void RefreshRoomUI()
@@ -179,4 +230,6 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
         roomButton.interactable = false;
         PhotonNetwork.JoinOrCreateRoom(roomName, new RoomOptions() { MaxPlayers = 20 },null);
     }
+
+
 }
