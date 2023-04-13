@@ -3098,7 +3098,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 26585574}
-  - {fileID: 1724784714}
   m_Father: {fileID: 1062649406}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3394,7 +3393,8 @@ MonoBehaviour:
   selctedRoomPlayerCount: {fileID: 864622264}
   joinRoomButton: {fileID: 1709887059}
   scrollViewContext: {fileID: 1724784713}
-  roomUIPrefab: {fileID: 0}
+  scrollbarVertical: {fileID: 1062649405}
+  roomUIPrefab: {fileID: 7737194430248164254, guid: a0596ff7da1bc704290bf8b2456e389a, type: 3}
   defualtPrompt: {fileID: 1714390815}
   roomButton: {fileID: 1709887059}
   roomName: LiorTest
@@ -3532,7 +3532,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 26585574}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.99993
+  m_Size: 0.99936
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -4082,7 +4082,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1724784714}
   m_Father: {fileID: 1685156720}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5664,6 +5665,7 @@ GameObject:
   - component: {fileID: 1714390814}
   - component: {fileID: 1714390816}
   - component: {fileID: 1714390815}
+  - component: {fileID: 1714390817}
   m_Layer: 5
   m_Name: NoRoomsPrompt
   m_TagString: Untagged
@@ -5788,6 +5790,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1714390813}
   m_CullTransparentMesh: 1
+--- !u!114 &1714390817
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1714390813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: -1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &1723133578
 GameObject:
   m_ObjectHideFlags: 0
@@ -5955,13 +5977,13 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1714390814}
-  m_Father: {fileID: 951245495}
-  m_RootOrder: 1
+  m_Father: {fileID: 1245214709}
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -427.00003, y: -0.00015926361}
-  m_SizeDelta: {x: 450, y: 500}
+  m_AnchoredPosition: {x: -0.000061035156, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1724784715
 MonoBehaviour:

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.Events;
 using Photon.Pun;
 using Photon.Realtime;
 
@@ -36,6 +37,7 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     [Space]
     [Header("Room Scroll View")]
     [SerializeField] GameObject scrollViewContext;
+    [SerializeField] GameObject scrollbarVertical;
     [SerializeField] GameObject roomUIPrefab;
     [SerializeField] TMP_Text defualtPrompt;
 
@@ -58,7 +60,13 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     [SerializeField] private CanvasRenderer panel_FirstUI;
     [SerializeField] private TextMeshProUGUI m_tmpg_2ndUIPrompt;
     #endregion
+
     private bool isMasterClient => PhotonNetwork.IsMasterClient;
+
+    Dictionary<int, GameObject> Rooms;
+    int dicCount = 0;
+
+    List<RoomInfo> ManagerRoomList => new();
 
     #region Event Methods
     public void NickNameCreated()
@@ -93,6 +101,11 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
             createRoomButton.interactable = false;
         }
     }
+    
+    public void CreateRoom()
+    {
+        PhotonNetwork.CreateRoom(chooseRoomInputField.text, new RoomOptions() { MaxPlayers = 20 },null);
+    }
 
     #endregion
 
@@ -112,7 +125,7 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
 
     private void FixedUpdate()
     {
-        if (PhotonNetwork.InLobby)
+        if (PhotonNetwork.InLobby && createRoomButton.gameObject.activeInHierarchy)
         {
             if (chooseRoomInputField.text.Length > 3) createRoomButton.interactable = true;
             else createRoomButton.interactable = false;
@@ -186,15 +199,21 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     public override void OnCreatedRoom()
     {
         base.OnCreatedRoom();
-        Debug.Log("Inside a room");
+        CreateRoomSwitch(false);
     }
 
+        
     public override void OnJoinedRoom()
     {
         base.OnJoinedRoom();
         m_tmpg_Room.text = "Connected To Room";
         RefreshRoomUI();
         Debug.Log("Joined Room");
+    }
+    public override void OnLeftRoom()
+    {
+        base.OnLeftRoom();
+        RefreshRoomUI();
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
@@ -215,10 +234,10 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
         RefreshRoomUI();
     }
 
-    public override void OnLeftRoom()
+
+    public override void OnJoinRoomFailed(short returnCode, string message)
     {
-        base.OnLeftRoom();
-        RefreshRoomUI();
+        base.OnJoinRoomFailed(returnCode, message);
     }
 
     public override void OnCreateRoomFailed(short returnCode, string message)
@@ -228,29 +247,71 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
         m_tmpg_Room.text = "Failed To Connect To Room";
     }
 
+
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
-        Debug.Log("OnRoomListUpdate Override Called");
         base.OnRoomListUpdate(roomList);
-        var x = 0;
+
+        Debug.Log("OnRoomListUpdate Override Called");
+
         if (PhotonNetwork.CountOfRooms > 0)
         {
-            Debug.Log("No Rooms");
+            Debug.Log("Rooms Created");
             foreach (var roominfo in roomList)
             {
-                var currentBotton = Instantiate<GameObject>(roomUIPrefab);
-                var tmpTempList = currentBotton.GetComponentsInChildren<TMP_Text>();
-                for (int i = 0; i < tmpTempList.Length; i++)
+                if (roominfo.PlayerCount > 0)
                 {
-                    var tmp = tmpTempList[i];
-                    tmp.text = roominfo.Name;
-                    tmp.text = $"{roominfo.PlayerCount}/{roominfo.MaxPlayers}";
+                    ManagerRoomList.Add(roominfo);
+                    UIRoomCreation(roominfo);
+                }
+                else
+                {
+                    foreach (var localRoom in ManagerRoomList)
+                    {
+                        if (localRoom.Name == roominfo.Name)
+                        {
+                            ManagerRoomList.Remove(localRoom);
+                            UIRoomDestruction(localRoom);
+                        }
+                    }
                 }
             }
         }
+
         else
         {
             Debug.Log("Room List Updated But No Rooms Was Found");
+        }
+    }
+
+    void UIRoomCreation(RoomInfo roominfo)
+    {
+        var currentBotton = Instantiate<GameObject>(roomUIPrefab, scrollViewContext.transform);
+        Rooms.Add(dicCount, currentBotton);
+        dicCount++;
+        var tmpTempList = currentBotton.GetComponentsInChildren<TMP_Text>();
+        for (int i = 0; i < tmpTempList.Length; i++)
+        {
+            var tmp = tmpTempList[i];
+            tmpTempList[0].text = roominfo.Name;
+            tmpTempList[1].text = $"{roominfo.PlayerCount}/{roominfo.MaxPlayers}";
+        }
+    }
+
+    void UIRoomDestruction(RoomInfo roomToDestroy)
+    {
+        foreach(var roominfo in Rooms)
+        {
+            if (roominfo.Value.name == roomToDestroy.Name)
+            {
+                int loc = roominfo.Key;
+                Destroy(roominfo.Value);
+                Rooms.Remove(roominfo.Key);
+                for (int i = loc + 1;i < Rooms.Count; i++)
+                {
+
+                }
+            }
         }
     }
 
@@ -273,13 +334,6 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
         //    panel_SecondUI.gameObject.SetActive(false);
         //    panel_FirstUI.gameObject.SetActive(true);
         //}
-    }
-
-    [ContextMenu("CreateRoom")]
-    public void CreateRoom(string roomName)
-    {
-        roomButton.interactable = false;
-        PhotonNetwork.CreateRoom(roomName, new RoomOptions() { MaxPlayers = 20 },null);
     }
 
     public void CreateRoomSwitch(bool createRoom)
