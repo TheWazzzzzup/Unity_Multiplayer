@@ -5,6 +5,7 @@ using TMPro;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using Photon.Pun;
+using System.Linq;
 using Photon.Realtime;
 
 public class PunMultiManagerScript : MonoBehaviourPunCallbacks
@@ -39,7 +40,7 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     [SerializeField] GameObject scrollViewContext;
     [SerializeField] GameObject scrollbarVertical;
     [SerializeField] GameObject roomUIPrefab;
-    [SerializeField] TMP_Text defualtPrompt;
+    [SerializeField] TMP_Text defualtScrollPrompt;
 
     #region old
     [Header("Room Controls")]
@@ -63,10 +64,9 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
 
     private bool isMasterClient => PhotonNetwork.IsMasterClient;
 
-    Dictionary<int, GameObject> Rooms;
     int dicCount = 0;
 
-    List<RoomInfo> ManagerRoomList => new();
+    List<GameObject> UIRoomList => new();
 
     #region Event Methods
     public void NickNameCreated()
@@ -213,7 +213,7 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
     {
         base.OnLeftRoom();
-        RefreshRoomUI();
+
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
@@ -251,66 +251,45 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
     {
         base.OnRoomListUpdate(roomList);
+        UIRoomClear();
 
         Debug.Log("OnRoomListUpdate Override Called");
 
         if (PhotonNetwork.CountOfRooms > 0)
         {
+            defualtScrollPrompt.gameObject.SetActive(false);
             Debug.Log("Rooms Created");
             foreach (var roominfo in roomList)
             {
                 if (roominfo.PlayerCount > 0)
                 {
-                    ManagerRoomList.Add(roominfo);
-                    UIRoomCreation(roominfo);
-                }
-                else
-                {
-                    foreach (var localRoom in ManagerRoomList)
-                    {
-                        if (localRoom.Name == roominfo.Name)
-                        {
-                            ManagerRoomList.Remove(localRoom);
-                            UIRoomDestruction(localRoom);
-                        }
-                    }
+                    UIRoomInstantion(roominfo);
                 }
             }
         }
-
         else
         {
+            defualtScrollPrompt.gameObject.SetActive(true);
             Debug.Log("Room List Updated But No Rooms Was Found");
         }
     }
 
-    void UIRoomCreation(RoomInfo roominfo)
+    void UIRoomInstantion(RoomInfo roominfo)
     {
-        var currentBotton = Instantiate<GameObject>(roomUIPrefab, scrollViewContext.transform);
-        Rooms.Add(dicCount, currentBotton);
-        dicCount++;
-        var tmpTempList = currentBotton.GetComponentsInChildren<TMP_Text>();
-        for (int i = 0; i < tmpTempList.Length; i++)
-        {
-            var tmp = tmpTempList[i];
-            tmpTempList[0].text = roominfo.Name;
-            tmpTempList[1].text = $"{roominfo.PlayerCount}/{roominfo.MaxPlayers}";
-        }
+        var tmpTempList = roomUIPrefab.GetComponentsInChildren<TMP_Text>();
+        tmpTempList[0].text = roominfo.Name;
+        tmpTempList[1].text = $"{roominfo.PlayerCount}/{roominfo.MaxPlayers}";
+        UIRoomList.Add(Instantiate<GameObject>(roomUIPrefab, scrollViewContext.transform));
     }
 
-    void UIRoomDestruction(RoomInfo roomToDestroy)
+    public void UIRoomClear()
     {
-        foreach(var roominfo in Rooms)
+        var childcount = scrollViewContext.transform.childCount;
+        for (int i = 0; i < childcount; i++)
         {
-            if (roominfo.Value.name == roomToDestroy.Name)
+            if (scrollViewContext.transform.GetChild(i).tag == "Destructable")
             {
-                int loc = roominfo.Key;
-                Destroy(roominfo.Value);
-                Rooms.Remove(roominfo.Key);
-                for (int i = loc + 1;i < Rooms.Count; i++)
-                {
-
-                }
+                Destroy(scrollViewContext.transform.GetChild(i).gameObject);
             }
         }
     }

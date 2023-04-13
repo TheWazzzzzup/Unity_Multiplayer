@@ -635,7 +635,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 478.5, y: -435.8333}
+  m_AnchoredPosition: {x: 960, y: -871.0449}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &210894911
@@ -3395,7 +3395,7 @@ MonoBehaviour:
   scrollViewContext: {fileID: 1724784713}
   scrollbarVertical: {fileID: 1062649405}
   roomUIPrefab: {fileID: 7737194430248164254, guid: a0596ff7da1bc704290bf8b2456e389a, type: 3}
-  defualtPrompt: {fileID: 1714390815}
+  defualtScrollPrompt: {fileID: 0}
   roomButton: {fileID: 1709887059}
   roomName: LiorTest
   startGameButton: {fileID: 1767880626}
@@ -3532,7 +3532,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 26585574}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.99936
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -6399,7 +6399,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 478.5, y: -269.5}
+  m_AnchoredPosition: {x: 960, y: -530.62695}
   m_SizeDelta: {x: 564.2, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1847392261
@@ -6574,7 +6574,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 478.5, y: -93.166664}
+  m_AnchoredPosition: {x: 960, y: -180.20898}
   m_SizeDelta: {x: 584, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1871114829
