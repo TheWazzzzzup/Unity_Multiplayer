@@ -36,10 +36,12 @@ public class MyRoomInfo : MonoBehaviour , IDeselectHandler
     void SendMe()
     {
         m_Script.RoomPicked(RoomInfo);
+        m_Script.SelectedRoomsCount(1);
     }
 
     public void OnDeselect(BaseEventData eventData)
     {
-        m_Script.RoomPicked(null);
+        m_Script.SelectedRoomsCount(-1);
+        m_Script.RoomPicked(RoomInfo);
     }
 }

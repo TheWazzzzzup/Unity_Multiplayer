@@ -66,7 +66,7 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
 
     private string currentSelctedRoom;
 
-    int dicCount = 0;
+    int currentSelctedRooms = 0;
 
     List<GameObject> UIRoomList => new();
 
@@ -247,7 +247,17 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     {
         base.OnJoinedRoom();
         joinRoomButton.interactable = false;
+        CreateRoomSwitch(false);
+        Debug.Log("JoinedRoom");
+
     }
+    
+    public override void OnJoinRoomFailed(short returnCode, string message)
+    {
+        base.OnJoinRoomFailed(returnCode, message);
+        Debug.Log("Failed To Join");
+    }
+    
     public override void OnLeftRoom()
     {
         base.OnLeftRoom();
@@ -258,7 +268,6 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     {
         base.OnPlayerEnteredRoom(newPlayer);
         Debug.Log($"Player name is {newPlayer.NickName}");
-        RefreshRoomUI();
 
         if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount > 1)
         {
@@ -269,25 +278,16 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         base.OnPlayerLeftRoom(otherPlayer);
-        RefreshRoomUI();
     }
 
 
-    public override void OnJoinRoomFailed(short returnCode, string message)
-    {
-        base.OnJoinRoomFailed(returnCode, message);
-    }
 
 
 
 
     public void RoomPicked(RoomInfo roominfo)
     {
-        if (roominfo == null)
-        {
-            CreateRoomSwitch(true);
-        }
-        else
+        if (roominfo != null)
         {
             selctedRoomName.text = "Room: " + roominfo.Name;
             selctedRoomPlayerList.text = $"{roominfo.PlayerCount}/{roominfo.MaxPlayers}";
@@ -312,6 +312,8 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
         UIRoomList.Add(Instantiate<GameObject>(roomUIPrefab, scrollViewContext.transform));
     }
 
+    public void SelectedRoomsCount(int index) => currentSelctedRoom += index;
+
     public void UIRoomClear()
     {
         var childcount = scrollViewContext.transform.childCount;
@@ -322,27 +324,6 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
                 Destroy(scrollViewContext.transform.GetChild(i).gameObject);
             }
         }
-    }
-
-    void RefreshRoomUI()
-    {
-        m_tmpg_PlayerListText.text = null;
-        if (PhotonNetwork.CurrentRoom != null)
-        {
-            m_tmpg_RoomName.text = PhotonNetwork.CurrentRoom.Name;
-            m_tmpg_RoomPlayerCount.text = string.Format($"{PhotonNetwork.CurrentRoom.PlayerCount}/{PhotonNetwork.CurrentRoom.MaxPlayers}");
-            //panel_SecondUI.gameObject.SetActive(true);
-            //panel_FirstUI.gameObject.SetActive(false);
-            foreach (var player in PhotonNetwork.PlayerList)
-            {
-                m_tmpg_PlayerListText.text += player.NickName + "\n";
-            }
-        }
-        //if (PhotonNetwork.CurrentRoom == null)
-        //{
-        //    panel_SecondUI.gameObject.SetActive(false);
-        //    panel_FirstUI.gameObject.SetActive(true);
-        //}
     }
 
     public void CreateRoomSwitch(bool createRoom)
