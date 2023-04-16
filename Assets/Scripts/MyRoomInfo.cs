@@ -6,7 +6,7 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using Photon.Realtime;
 
-public class MyRoomInfo : MonoBehaviour , IDeselectHandler
+public class MyRoomInfo : MonoBehaviour
 {
     public static RoomInfo RoomInfo { get; private set; }
 
@@ -14,18 +14,23 @@ public class MyRoomInfo : MonoBehaviour , IDeselectHandler
 
     Button m_Button;
 
-    UnityAction m_Action;
 
     private void Start()
     {
         m_Script = GetComponentInParent<PunMultiManagerScript>();
-        m_Button = GetComponent<Button>();
-        if (m_Script != null) Debug.Log("ParentScriptFound");
-    }
+        if (m_Script != null)
+        {
+            m_Button = GetComponent<Button>();
+            m_Button.onClick.AddListener(SendMe);
+        }
 
-    private void FixedUpdate()
-    {
-        m_Button.onClick.AddListener(SendMe);
+        
+
+        else
+        {
+            Destroy(this);
+            Debug.LogWarning($"{this.gameObject.name} Does not have the desired parent, You are fucked!");
+        }
     }
 
     public void SetRoomInfo(RoomInfo roominfo)
@@ -36,11 +41,5 @@ public class MyRoomInfo : MonoBehaviour , IDeselectHandler
     void SendMe()
     {
         m_Script.RoomPicked(RoomInfo);
-        m_Script.SelectedRoomsCount(1);
-    }
-
-    public void OnDeselect(BaseEventData eventData)
-    {
-        m_Script.SelectedRoomsCount(-1);
     }
 }

@@ -39,6 +39,7 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     [SerializeField] private TMP_Text selectedRoomListPrompt;
     [SerializeField] private TMP_Text selctedRoomPlayerList;
     [SerializeField] private Button joinRoomButton;
+    [SerializeField] private Button exitButton;
     [Space]
 
     [Header("Room Scroll View")]
@@ -60,10 +61,6 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     private bool isMasterClient => PhotonNetwork.IsMasterClient;
 
     private string currentSelctedRoom;
-
-    int currentRoomUiSelcted = 0;
-
-    bool joinRoomInitated = false;
 
     List<GameObject> UIRoomList => new();
 
@@ -300,6 +297,7 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     {
         if (roominfo != null)
         {
+            Debug.Log("HasInfo");
             selctedRoomName.text = "Room: " + roominfo.Name;
             selctedRoomPlayerList.text = $"{roominfo.PlayerCount}/{roominfo.MaxPlayers}";
             CreateRoomSwitch(false);
@@ -307,6 +305,7 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
             currentSelctedRoom = roominfo.Name;
             joinRoomButton.onClick.AddListener(JoinRoom);
         }
+        Debug.Log("!HasInfo");
     }
 
     void JoinRoom()
@@ -325,17 +324,6 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
 
     public void SelectedRoomsCount(int index) => currentSelctedRoom += index;
 
-    public void UIRoomClear()
-    {
-        var childcount = scrollViewContext.transform.childCount;
-        for (int i = 0; i < childcount; i++)
-        {
-            if (scrollViewContext.transform.GetChild(i).tag == "Destructable")
-            {
-                Destroy(scrollViewContext.transform.GetChild(i).gameObject);
-            }
-        }
-    }
 
     public void RoomHandler()
     {
@@ -374,6 +362,7 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
 
     public void CreateRoomSwitch(bool createRoom)
     {
+        Debug.Log($"Room Switch is called with {createRoom} boolean");
         if (createRoom)
         {
             chooseRoomInputField.gameObject.SetActive(true);
@@ -384,6 +373,7 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
             selctedRoomPlayerList.gameObject.SetActive(false);
             selectedRoomListPrompt.gameObject.SetActive(false);
             joinRoomButton.gameObject.SetActive(false);
+            exitButton.gameObject.SetActive(false);
         }
         else
         {
@@ -395,6 +385,28 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
             selctedRoomPlayerList.gameObject.SetActive(true);
             selectedRoomListPrompt.gameObject.SetActive(true);
             joinRoomButton.gameObject.SetActive(true);
+            exitButton.gameObject.SetActive(true);
         }
     }
+
+
+
+    #region Handlers
+    void UIRoomClear()
+    {
+        var childcount = scrollViewContext.transform.childCount;
+        for (int i = 0; i < childcount; i++)
+        {
+            if (scrollViewContext.transform.GetChild(i).tag == "Destructable")
+            {
+                Destroy(scrollViewContext.transform.GetChild(i).gameObject);
+            }
+        }
+    }
+    
+    
+    
+    
+    #endregion
+
 }
