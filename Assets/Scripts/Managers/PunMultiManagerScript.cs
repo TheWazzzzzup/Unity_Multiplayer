@@ -7,6 +7,8 @@ using UnityEngine.Events;
 using Photon.Pun;
 using System.Linq;
 using Photon.Realtime;
+using Photon.Pun.Demo.Cockpit;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 public class PunMultiManagerScript : MonoBehaviourPunCallbacks
 {
@@ -19,10 +21,12 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     // Second Screen
     [SerializeField] private TMP_Text welcomePrompt2;
     [SerializeField] private Button joinServer;
-    
     [Space]
+    
     [Header("Lobby Panel")]
     [SerializeField] private GameObject lobbyPanel;
+    [Space]
+
     [Header("Room Info Panel")]
     [SerializeField] TMP_Text masterStatus;
     [SerializeField] TMP_Text lobbyStatus;
@@ -36,31 +40,22 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     [SerializeField] private TMP_Text selctedRoomPlayerList;
     [SerializeField] private Button joinRoomButton;
     [Space]
+
     [Header("Room Scroll View")]
     [SerializeField] GameObject scrollViewContext;
     [SerializeField] GameObject scrollbarVertical;
     [SerializeField] GameObject roomUIPrefab;
     [SerializeField] TMP_Text defualtScrollPrompt;
+    [Space]
 
-    #region old
-    [Header("Room Controls")]
-    [SerializeField] private Button roomButton;
-    [SerializeField] private string roomName;
-    [SerializeField] private Button startGameButton;
+    [Header("Room Panel")]
+    [SerializeField] private GameObject roomPanel;
+    [Space]
 
-    [SerializeField] TMP_InputField nicknameInputField;
-    [Header("Debug Text")]
-    [SerializeField] private TextMeshProUGUI m_tmpg_Master;
-    [SerializeField] private TextMeshProUGUI m_tmpg_Room;
-    [SerializeField] private TextMeshProUGUI m_tmpg_RoomName;
-    [SerializeField] private TextMeshProUGUI m_tmpg_RoomPlayerCount;
-    [SerializeField] private TextMeshProUGUI m_tmpg_PlayerListText;
-
-    [Header("UI's")]
-    [SerializeField] private CanvasRenderer panel_SecondUI;
-    [SerializeField] private CanvasRenderer panel_FirstUI;
-    [SerializeField] private TextMeshProUGUI m_tmpg_2ndUIPrompt;
-    #endregion
+    [SerializeField] private TMP_Text roomPanelRoomName;
+    [SerializeField] private TMP_Text roomPanelRoomNumberOfPlayer;
+    [SerializeField] private Button startOrJoinGameButton;
+    [SerializeField] private TMP_Text startOrJoinGameText;
 
     private bool isMasterClient => PhotonNetwork.IsMasterClient;
 
@@ -155,6 +150,14 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     public override void OnDisconnected(DisconnectCause cause)
     {
         base.OnDisconnected(cause);
+        if (PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.LeaveRoom();
+        }
+        if (PhotonNetwork.InLobby)
+        {
+            PhotonNetwork.LeaveLobby();
+        }
         if (masterStatus != null)
         {
             masterStatus.color = Color.red;
@@ -218,6 +221,8 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
             selctedRoomPlayerList.text = $"{player.NickName}\n";
         }
         CreateRoomSwitch(false);
+        LobbyToRoomSwitch(true);
+        RoomHandler();
     }
     
     public override void OnCreateRoomFailed(short returnCode, string message)
@@ -244,14 +249,18 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     [ContextMenu("DebugLobbyDisconnect")]
     public void LobbyDisconnect() => PhotonNetwork.LeaveLobby();
 
+    [ContextMenu("DebugLobbyConnect")]
+    public void LobbyConnect() => PhotonNetwork.JoinLobby();
     #endregion
-    
+
 
     public override void OnJoinedRoom()
     {
         base.OnJoinedRoom();
         joinRoomButton.interactable = false;
         CreateRoomSwitch(false);
+        LobbyToRoomSwitch(true);
+        RoomHandler();
         Debug.Log("JoinedRoom");
 
     }
@@ -265,27 +274,25 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
     {
         base.OnLeftRoom();
-
+        LobbyToRoomSwitch(false);
     }
 
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
-        base.OnPlayerEnteredRoom(newPlayer);
-        Debug.Log($"Player name is {newPlayer.NickName}");
+        // refresh room ui! like on room list update
 
-        if (PhotonNetwork.IsMasterClient && PhotonNetwork.CurrentRoom.PlayerCount > 1)
-        {
-            startGameButton.interactable = true;
-        }
+        base.OnPlayerEnteredRoom(newPlayer);
+        RoomHandler();
     }
     
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         base.OnPlayerLeftRoom(otherPlayer);
+        RoomHandler();
     }
 
 
-
+    
 
 
 
@@ -328,6 +335,41 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
                 Destroy(scrollViewContext.transform.GetChild(i).gameObject);
             }
         }
+    }
+
+    public void RoomHandler()
+    {
+        if (roomPanel.activeInHierarchy)
+        {
+            roomPanelRoomName.text = "Room: " + PhotonNetwork.CurrentRoom.Name;
+            roomPanelRoomNumberOfPlayer.text = $"{PhotonNetwork.CurrentRoom.PlayerCount}/{PhotonNetwork.CurrentRoom.MaxPlayers}";
+
+            if (isMasterClient)
+            {
+                startOrJoinGameButton.interactable = false;
+                startOrJoinGameText.text = "Start Game";
+            }
+            else
+            {
+                startOrJoinGameButton.interactable = false;
+                startOrJoinGameText.text = "Join Game";
+            }
+        }
+    }
+
+    public void LobbyToRoomSwitch(bool switchToRoom)
+    {
+        if (lobbyPanel != null && roomPanel != null) 
+        if (switchToRoom)
+        {
+            lobbyPanel.SetActive(false);
+            roomPanel.SetActive(true);
+        }
+        else
+        {
+                lobbyPanel.SetActive(true);
+                roomPanel.SetActive(false);
+            }
     }
 
     public void CreateRoomSwitch(bool createRoom)
