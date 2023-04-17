@@ -57,6 +57,11 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     [SerializeField] private TMP_Text roomPanelRoomNumberOfPlayer;
     [SerializeField] private Button startOrJoinGameButton;
     [SerializeField] private TMP_Text startOrJoinGameText;
+    [Space]
+
+    [SerializeField] private GameObject playerUIPrefab;
+    [SerializeField] private GameObject playerUIContext;
+
 
     private bool isMasterClient => PhotonNetwork.IsMasterClient;
 
@@ -327,6 +332,18 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
 
     public void RoomHandler()
     {
+        // destroy player list on every update
+        var childcount = playerUIContext.transform.childCount;
+        for (int i = 0; i < childcount; i++)
+        {
+            if (playerUIContext.transform.GetChild(i).tag == "Destructable")
+            {
+                Debug.Log("PlayerListCleard");
+                Destroy(playerUIContext.transform.GetChild(i).gameObject);
+            }
+        }
+
+
         if (roomPanel.activeInHierarchy)
         {
             roomPanelRoomName.text = "Room: " + PhotonNetwork.CurrentRoom.Name;
@@ -341,6 +358,26 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
             {
                 startOrJoinGameButton.interactable = false;
                 startOrJoinGameText.text = "Join Game";
+            }
+        }
+
+        Debug.Log("Players:");
+        foreach (var player in PhotonNetwork.CurrentRoom.Players.Values)
+        {
+            Debug.Log($"{player.NickName}");
+            var playerUI = Instantiate(playerUIPrefab,playerUIContext.transform);
+            TMP_Text[] playerListUI= playerUI.GetComponentsInChildren<TMP_Text>();
+            playerListUI[0].text = player.NickName;
+            playerListUI[1].text = "N/A";
+        }
+
+        if (isMasterClient)
+        {
+            int children = playerUIContext.transform.childCount;
+            for (int i = 0; i < children; i++)
+            {
+                var child = playerUIContext.transform.GetChild(i);
+                var button = child.GetComponentInChildren<Button>();
             }
         }
     }
