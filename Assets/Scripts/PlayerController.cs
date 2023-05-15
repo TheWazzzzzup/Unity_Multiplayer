@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviourPun
 {
     public bool canControl = false;
     [SerializeField] private int speed;
+
     // Update is called once per frame
     void Update()
     {

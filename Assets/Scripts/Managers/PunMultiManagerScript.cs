@@ -62,6 +62,10 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     [SerializeField] private GameObject playerUIPrefab;
     [SerializeField] private GameObject playerUIContext;
 
+    [Header("Player")]
+    [SerializeField] private GameObject PlayerPrefab;
+    const string PLAYER_PREFAB_NAME = "PlayerCapsule";
+
 
     private bool isMasterClient => PhotonNetwork.IsMasterClient;
 
@@ -298,7 +302,7 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     public void StartAndLoadLevel()
     {
         PhotonNetwork.LoadLevel(1);
-        PhotonNetwork.Instantiate()
+        PhotonNetwork.Instantiate(PLAYER_PREFAB_NAME, Vector3.zero,PlayerPrefab.transform.rotation);
     }
     
 
