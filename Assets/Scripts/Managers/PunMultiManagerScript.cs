@@ -294,6 +294,12 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     }
 
 
+    [ContextMenu("LoadLevel")]
+    public void StartAndLoadLevel()
+    {
+        PhotonNetwork.LoadLevel(1);
+        PhotonNetwork.Instantiate()
+    }
     
 
 
