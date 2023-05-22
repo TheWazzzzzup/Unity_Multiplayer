@@ -41,6 +41,8 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     [SerializeField] private Button joinRoomButton;
     [SerializeField] private Button exitButton;
     [Space]
+    [SerializeField] private TMP_InputField enterYourScore;
+    int score;
 
     [Header("Room Scroll View")]
     [SerializeField] GameObject scrollViewContext;
@@ -238,28 +240,6 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
         chooseRoomPrompt.text = "Failed to Create Room";
     }
     
-    
-    #endregion
-
-    #region Debug
-
-    [ContextMenu("DebugServerDisconnect")]
-    public void Disconnect()
-    {
-        PhotonNetwork.Disconnect();
-    }
-
-    [ContextMenu("DebugNumberOfRooms")]
-    public void NumberOfRooms() => Debug.Log(PhotonNetwork.CountOfRooms);
-
-    [ContextMenu("DebugLobbyDisconnect")]
-    public void LobbyDisconnect() => PhotonNetwork.LeaveLobby();
-
-    [ContextMenu("DebugLobbyConnect")]
-    public void LobbyConnect() => PhotonNetwork.JoinLobby();
-    #endregion
-
-
     public override void OnJoinedRoom()
     {
         base.OnJoinedRoom();
@@ -296,6 +276,26 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
         base.OnPlayerLeftRoom(otherPlayer);
         RoomHandler();
     }
+    
+    #endregion
+
+    #region Debug
+
+    [ContextMenu("DebugServerDisconnect")]
+    public void Disconnect()
+    {
+        PhotonNetwork.Disconnect();
+    }
+
+    [ContextMenu("DebugNumberOfRooms")]
+    public void NumberOfRooms() => Debug.Log(PhotonNetwork.CountOfRooms);
+
+    [ContextMenu("DebugLobbyDisconnect")]
+    public void LobbyDisconnect() => PhotonNetwork.LeaveLobby();
+
+    [ContextMenu("DebugLobbyConnect")]
+    public void LobbyConnect() => PhotonNetwork.JoinLobby();
+    #endregion
 
 
     [ContextMenu("LoadLevel")]
@@ -304,8 +304,21 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
         PhotonNetwork.LoadLevel(1);
         PhotonNetwork.Instantiate(PLAYER_PREFAB_NAME, Vector3.zero,PlayerPrefab.transform.rotation);
     }
-    
 
+
+    public void UpdateScoreProprety()
+    {
+        if (!PhotonNetwork.IsConnectedAndReady)
+        {
+            Debug.LogWarning("You tried to set protpreies while disconnected");
+            return;
+        }
+
+        // Get the playerscore
+        score = int.Parse(enterYourScore.text);
+        ExitGames.Client.Photon.Hashtable scoreHashtable = new();
+
+    }
 
 
     public void RoomPicked(RoomInfo roominfo)
@@ -323,10 +336,12 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
         Debug.Log("!HasInfo");
     }
 
+
     void JoinRoom()
     {
         PhotonNetwork.JoinRoom(currentSelctedRoom,null);
     }
+
 
     void UIRoomInstantion(RoomInfo roominfo)
     {
