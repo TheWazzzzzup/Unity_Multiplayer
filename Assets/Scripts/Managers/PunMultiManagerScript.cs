@@ -67,7 +67,7 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
     [Header("Player")]
     [SerializeField] private GameObject PlayerPrefab;
     const string PLAYER_PREFAB_NAME = "PlayerCapsule";
-
+    private const string SCORE_KEY_NAME = "Score";
 
     private bool isMasterClient => PhotonNetwork.IsMasterClient;
 
@@ -317,7 +317,8 @@ public class PunMultiManagerScript : MonoBehaviourPunCallbacks
         // Get the playerscore
         score = int.Parse(enterYourScore.text);
         ExitGames.Client.Photon.Hashtable scoreHashtable = new();
-
+        scoreHashtable.Add(SCORE_KEY_NAME, score);
+        PhotonNetwork.LocalPlayer.SetCustomProperties(scoreHashtable);
     }
 
 
